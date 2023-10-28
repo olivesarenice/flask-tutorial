@@ -4,7 +4,6 @@ from datetime import datetime
 
 
 app = Flask(__name__)
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db' 
 db = SQLAlchemy(app)
 
@@ -15,6 +14,10 @@ class myList(db.Model):
 
     def __repr__(self):
         return f'<Entry {self.id}'
+    
+
+with app.app_context():
+    db.create_all()
 
 @app.route('/', methods = ['POST','GET'])
 def index():
@@ -52,7 +55,7 @@ def delete(id):
 def update(id): 
     task = myList.query.get_or_404(id) # Either way, retrieve the task data first
     if request.method == 'GET': # When the user first clicks on Update
-	    return render_template('update.html', task=task) # send them to the update.html page with the form preloaded with the selected task data.
+        return render_template('update.html', task=task) # send them to the update.html page with the form preloaded with the selected task data.
     elif request.method == 'POST': # Then when they POST the updated data,
         task.content = request.form["content"] # Update the task contents with the ontent in the form
         try:
